@@ -17,7 +17,3 @@ return sequelize.define("Trainsession", {
     TableName: 'Trainsession',
   }
 )};
-
-// TrainSession.belongsTo(User, { foreignKey: 'User_Id' });
-
-// module.exports = TrainSession;

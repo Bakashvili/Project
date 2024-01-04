@@ -1,8 +1,8 @@
-const LevelController = Api_Controller.LevelController;
-const ResultController = Api_Controller.ResultController;
-const UserController = Api_Controller.UserController;
+LevelController = require('./LevelController');
+ResultController = require('./ResultController');
+UserController = require('./UserController');
 module.exports = {
-    LevelController: LevelController,
-    ResultController: ResultController,
-    UserController: UserController
+    LevelController : LevelController ,
+    ResultController : ResultController,
+    UserController : UserController
 }

@@ -1,6 +1,20 @@
-const swaggerAutogen = require('swagger-autogen')();
-   const outputFile = './swagger_output.json';
-   const endpointsFiles = ['./index.js'];
-   const generateSwaggerSpec = async () => {
-    await swaggerAutogen(outputFile, endpointsFiles);
+const swaggerJSDoc = require('swagger-jsdoc');
+const fs = require('fs');
+
+async function generateSwaggerSpec() {
+  const options = {
+    definition: {
+      openapi: '3.1.0',
+      info: {
+        title: 'Your API',
+        version: '1.0.0',
+        description: 'API documentation using Swagger',
+      },
+    },
+    apis: ['./Api_Controller/*.js'], // Укажите путь к вашим маршрутам
   };
+
+  return swaggerJSDoc(options);
+}
+
+module.exports = generateSwaggerSpec;

@@ -1,5 +1,6 @@
 const express = require('express');
 const LevelService = require('../Api_Services/LevelServices');
+const Level = require('../DataAccesLayer/Level');
 
 const router = express.Router();
 
@@ -33,4 +34,15 @@ router.post('/end', async (req, res) => {
   }
 });
 
-module.exports = router;
+const addPost = (req, res) => {
+  const { Texttask, CorrectAnswer } = req.body;
+  const Level = new Level({Texttask, CorrectAnswer });
+  Level
+    .save()
+    .then((Level) => res.status(200).json(Level))
+    .catch((error) => handleError(res, error));
+}
+module.exports = {
+  addPost,
+
+};

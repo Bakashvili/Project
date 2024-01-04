@@ -1,6 +1,6 @@
-const LevelServices = Api_Services.LevelServices;
-const UserServices =Api_Services.UserServices;
-const ResultServices=Api_Services.ResultServices;
+LevelServices = require('./LevelServices');
+UserServices = require('./UserAccountServices');
+ResultServices = require('./ResultServices');
 module.exports ={
     LevelServices: LevelServices,
     UserServices : UserServices,

@@ -1,4 +1,5 @@
 const { Level } = require('../DataAccesLayer/Level');
+const router = require('../apiRoutes');
 
 exports.getlevels = async () => {
   const levels = await Level.findAll();

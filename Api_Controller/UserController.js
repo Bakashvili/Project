@@ -2,46 +2,94 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const UserContract = require('../ApiContract/UserContract');
-const UserService = require('../Api_Services/UserServices');
+
+
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const guid = uuidv4();
-  const result = await UserService.register(email, hashedPassword, guid);
-  if (result.success) {
-    const token = jwt.sign({ id: guid }, process.env.JWT_SECRET);
-    const user = new UserContract(token, null);
-    res.json(user);
-  } else {
-    res.status(400).json({ message: result.message });
-  }
-});
+// UserController.js
+const UserAccountService = require('../Api_Services/UserAccountServices');
+const JwtUtils = require('jwt-utils');
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const result = await UserService.login(email, password);
-  if (result.success) {
-    const guid = result.data;
-    const token = jwt.sign({ id: guid }, process.env.JWT_SECRET);
-    const user = new UserContract(token, guid);
-    res.json(user);
-  } else {
-    res.status(400).json({ message: result.message });
-  }
-});
+class UserController {
+  async createUser(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+    const email = req.body.email;
+    
+    // Проверка корректности введенных данных
+    if (!username || !password) {
+      return res.status(400).send('Не указано имя пользователя или пароль');
+    }
+    if (password.length < 6) {
+      return res.status(400).send('Пароль должен содержать не менее 6 символов');
+    }
 
-router.delete('/delete/:id', async (req, res) => {
-  const { id } = req.params;
-  const result = await UserService.delete(id);
-  if (result.success) {
-    res.json({ message: 'User deleted successfully' });
-  } else {
-    res.status(400).json({ message: result.message });
+    // Вызов функции сервиса для сохранения персональных данных пользователя
+    try {
+      
+      const user = await UserAccountService.createUser({ username, email, password});
+      
+      return res.status(200).send('Пользователь успешно зарегистрирован');
+    } catch (error) {
+      return res.status(500).send('Ошибка при создании пользователя');
+    }
   }
-});
 
-module.exports = router;
+  authUser(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    // Проверка корректности введенных данных
+    if (!username || !password) {
+      return res.status(400).send('Не указано имя пользователя или пароль');
+    }
+
+    // Проверка аутентификации пользователя
+    const user = UserAccountService.getUserByUsername(username);
+    if (!user || user.password !== password) {
+      return res.status(401).send('Неверное имя пользователя или пароль');
+    }
+
+    // Генерация JWT токена
+    const token = JwtUtils.generateToken(user);
+    return res.status(200).json({ token });
+  }
+
+  updatePassword(req, res) {
+    const username = req.body.username;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    // Проверка корректности введенных данных
+    if (!username || !oldPassword || !newPassword) {
+      return res.status(400).send('Не указано имя пользователя, старый или новый пароль');
+    }
+
+    // Обновление пароля пользователя
+    const updatedUser = UserAccountService.updatePassword(username, oldPassword, newPassword);
+    if (!updatedUser) {
+      return res.status(500).send('Ошибка при обновлении пароля');
+    }
+    return res.status(200).send('Пароль успешно обновлен');
+  }
+
+  deleteAccount(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    // Проверка корректности введенных данных
+    if (!username || !password) {
+      return res.status(400).send('Не указано имя пользователя или пароль');
+    }
+
+    // Удаление учетной записи пользователя
+    const deleted = UserAccountService.deleteUser(username, password);
+    if (!deleted) {
+      return res.status(500).send('Ошибка при удалении учетной записи');
+    }
+    return res.status(200).send('Учетная запись успешно удалена');
+  }
+}
+
+module.exports = new UserController();

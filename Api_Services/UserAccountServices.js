@@ -1,21 +1,29 @@
-
-const User = require('../DataAccesLayer/User');
-
-const sequelize = require('sequelize');
-const JwtUtils = require('jwt-utils');
-
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize("cssgriddb","root","Kartoshka",
+{
+ dialect:"mysql",
+ host : "127.0.0.1",
+ logging: false
+});
+const User = require('../DataAccesLayer/User')(sequelize);
+var config = { expiration: 600};
+var jwt = require('../jwt-utils');
+const bcrypt = require('bcrypt');
 class UserAccountServices {
   async createUser(userData) {
     try {
       const { username, email, password } = userData;
-      const token = JwtUtils.generateToken(userData);
+      console.log(userData);
+      const token = jwt.getNewAccessToken(username);
+      console.log(token);
       const UserModel = await User.create({
-        Uid: token, // Убедитесь, что правильно генерируете идентификатор пользователя
+        Uid: token, 
         Email: email,
         Username: username,
-        Password: password, // Предположим, что у вас есть поле Token в вашей модели пользователя
+        Password: password, 
       });
-      return UserModel; // Используем метод create для создания нового пользователя
+      console.log(UserModel);
+      return UserModel; 
       
     } catch (error) {
       throw new Error('Failed to create user');
@@ -24,27 +32,43 @@ class UserAccountServices {
 
   async authUser(userData) {
     try {
-      const user = await User.findOne({ where: { Email: userData.email } });
-      if (!user || user.Password !== userData.password) {
+      const {email, password} = userData;
+      console.log(email, password);
+      const user = await User.findOne({ where: { Email: email } });
+      const passwordMatch = await bcrypt.compare(password, user.Password);
+      console.log(passwordMatch);
+      if (!user || !passwordMatch) {
         throw new Error('Invalid email or password');
       }
-      return user;
+      //console.log(email, user.Password, password, user);
+      // if (!user || user.Password !== password) {
+      //   throw new Error('Invalid email or password');
+      // }
+      // else{
+       console.log(email, password);
+        
+      // }
+      
     } catch (error) {
       throw new Error('Failed to authenticate user');
     }
   }
 
-  async updatePassword(userId, newPassword) {
+  async updateEmail(userData) {
     try {
-      const user = await User.findByPk(userId);
-      if (!user) {
-        throw new Error('User not found');
+      const {email, password, newEmail} = userData;
+      const user = await User.findOne({ where: { Email: email } });
+      console.log(user, password)
+      const passwordMatch = await bcrypt.compare(password, user.Password);
+      console.log(passwordMatch);
+      if (!user || !passwordMatch) {
+        throw new Error('Invalid email or password');
       }
-      user.Password = newPassword;
+      user.Email = newEmail;
       await user.save();
       return user;
     } catch (error) {
-      throw new Error('Failed to update password');
+      throw new Error('Failed to update email');
     }
   }
 
@@ -59,6 +83,7 @@ class UserAccountServices {
       throw new Error('Failed to delete account');
     }
   }
+
 }
 
 module.exports = new UserAccountServices();

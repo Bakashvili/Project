@@ -13,10 +13,10 @@ const ejs = require('ejs');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const UserAccountServices = require('./Api_Services/UserAccountServices');
-
+const ResultServices = require('./Api_Services/ResultServices');
 //const levelRoutes = require('./routes/levelroute');
 const userController= require('./Api_Controller/UserController');
-
+const LevelController= require('./Api_Controller/LevelController');
 const app = express();app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
@@ -42,14 +42,12 @@ app.get('/', (req, res) => {
   const title = 'Home';
   res.render(createPath('index'), { title });
 });
-app.get('/game', (req, res) => {
-  const title = 'game';
-  res.render(createPath('index_1'), { title });
-});
-app.get('/leaders', (req, res) => {
-  const title = 'Table of leaders';
-  res.render(createPath('leaders'), { title });
-});
+// app.get('/game', (req, res) => {
+//   const title = 'game';
+//   res.render(createPath('index_1'), { title });
+// });
+
+
 app.get('/login', (req, res) => {
   const title = 'login';
   res.render(createPath('login'), { title });
@@ -57,6 +55,36 @@ app.get('/login', (req, res) => {
 app.get('/register', (req, res) => {
   const title = 'register';
   res.render(createPath('register'), { title });
+});
+app.get('/update', (req, res) => {
+  const title = 'update';
+  res.render(createPath('update'), { title });
+});
+app.get('/game', async (req, res) => {
+  try {
+    const level = await LevelController.getLevel(); 
+    const UpdateScore = await LevelController.UpdateScore();
+    res.render('index_1', { textTask: level.Texttask, score: UpdateScore}); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/game/getResult', async (req, res) => {
+  const {answer} = req.body;
+  try {
+    const level = await LevelController.getLevel(); 
+    const answerlevel = await LevelController.sendAnswer(answer); 
+    if (!answerlevel) {
+      return res.status(500).send('Error checking answer');
+    }
+    const increaseScore = await LevelController.increaseScore(); 
+   res.render('index_1', { textTask: level.Texttask, score: increaseScore }); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 app.post('/registerUser', async function(req, res) {
   const { username, email, password } = req.body;
@@ -69,12 +97,53 @@ app.post('/registerUser', async function(req, res) {
     return res.status(200).send('User successfully registered');
   } catch (error) {
     console.error(error);
-    return res.status(500).send(`Internal server error! username:${username} + email:${email} + password:${password}`);
+    return res.status(500).send(`Internal server error!`);
    
   }
 });
+app.post('/updateUser', async function(req, res) {
+  const { email, password, newemail } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await UserAccountServices.updateEmail({ email, password: hashedPassword, newemail });
+    if (!user) {
+      return res.status(500).send('Error updating user');
+    }
+    return res.status(200).send('User successfully updated');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(`Internal server error!`);
+   
+  }
+});
+app.post('/LoginUser', async function(req, res) {
+  const {email, password } = req.body;
+  try {
+    if (!email || !password) {
+    return res.status(400).send('Не указано имя пользователя или пароль');
+    
+  }
+    const user = await UserAccountServices.authUser({email, password});
+    return res.status(200).send(`successfull login `);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(`Internal server error!`);
+   
+  }
+  // Генерация JWT токена
+  // const token = JwtUtils.generateToken(user);
+  // return res.status(200).json({ token });
+});
 
-
+app.get('/leaders', async (req, res) => {
+  try {
+    const leaderboardData = await ResultServices.getLeaderboardData();
+    res.render('leaders', { leaderboardData: leaderboardData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 // (async () => {
 //   try {
 //     const swaggerSpec = await generateSwaggerSpec();

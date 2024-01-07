@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize){
-return  sequelize.define("User", {
+const User =  sequelize.define("User", {
   Id: {
     type:  Sequelize.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
   Uid: {
-    type:  Sequelize.BIGINT,
+    type:  Sequelize.STRING,
     allowNull: false,
     unique: true
   },
@@ -29,5 +29,12 @@ return  sequelize.define("User", {
     timestamps: false,
     freezeTableName: true,
     nameTable:'User'
-  }
-)};
+  });
+
+  User.associate = function(models) {
+    this.hasMany(models.Result, { foreignKey: 'UserId' });
+  };
+  return User};
+  
+
+//User.hasMany(Result, { foreignKey: 'UserId' });

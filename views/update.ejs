@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device - width, initial-scale=1.0"> 
+        <title>CssGridLayout</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;1,300&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Press+Start+2P&display=swap" rel="stylesheet">
+        <link rel="stylesheet"  href="style.css">
+</head>
+<body> 
+ <div class="wrapper">
+    <div class="form-box register">
+        <h2>Изменение данных</h2>
+        <form method="post" action="/updateUser">
+                <span class="icon-close_1"><ion-icon name="close"></ion-icon></span>
+            <div class="input-box">
+                <span class="icon"><ion-icon name="mail"></ion-icon></ion-icon></span>
+                <input type="email" name="email" id="email" value="" required>
+                <label for="email">Email</label>
+            </div>
+            <div class="input-box">
+                <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+                <input type="password" name="password" id="password" value="">
+                <label for="password">Пароль</label>
+            </div>
+            <div class="input-box">
+                <span class="icon"><ion-icon name="mail"></ion-icon></ion-icon></span>
+                <input type="email" name="newemail" id="newemail" value="" required>
+                <label for="newemail">New Email</label>
+            </div>
+            <button type="submit" class="btn" name="btnreg">Обновить данные</button>
+            <div class="login-register">
+                <p>Уже есть аккаунт?<a href="login" class="login-link"> Вход</a></p>
+            </div>
+        </form>
+    </div>
+ </div>
+ 
+ </body>
+ 
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</html>
+

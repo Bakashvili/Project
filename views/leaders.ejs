@@ -7,29 +7,23 @@
   <link rel="stylesheet" href="style.css"> 
   <title>Таблица результатов</title>
 </head>
-<body>
+<body> <form method="get" action="/leaders"></form>
   <table>
     <tr>
       <th>Место</th>
-      <th>Логин</th>
+      <th>ID</th>
       <th>Баллы</th>
       <th>Время</th>
+     
     </tr>
-    <tr>
-      <td>1</td>
-      <td>Иванов</td>
-      <td>95</td>
-      <td>00:30</td>
-    </tr>
-    <!-- Добавьте остальные строки здесь -->
-    <!-- Пример строки:
-    <tr>
-      <td>2</td>
-      <td>Петров</td>
-      <td>85</td>
-      <td>00:45</td>
-    </tr>
-    -->
-  </table>
+    <% leaderboardData.forEach((result, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= result.UserId %></td>
+        <td><%= result.Score %></td>
+        <td><%= result.Times %></td>
+      </tr>
+    <% }); %>
+  </table></form>
 </body>
 </html>

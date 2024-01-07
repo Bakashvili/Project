@@ -1,24 +1,43 @@
-const { Result } = require('../DataAccesLayer/Result');
-const express = require('express');
-//const { Leaders } = require('../models/Leaders');
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize("cssgriddb","root","Kartoshka",
+{
+ dialect:"mysql",
+ host : "127.0.0.1",
+ logging: false
+});
 
-exports.getresults = async () => {
-  const results = await Result.findAll();
-//   const leaders = results.map((r) => new Leaders(r.UserID, r.Level, r.Time, r.Points));
-//   return leaders;
-};
+const User = require('../DataAccesLayer/User')(sequelize);
+const Result = require('../DataAccesLayer/Result')(sequelize);
+class ResultServices {
+  async getLeaderboardData() {
+  try {
+    const leaderboardData = await Result.findAll({
+      attributes: ['Score', 'Times', 'UserId'],
+ // Выбираем нужные поля
+      order: [['Score', 'DESC']], // Сортируем по убыванию поля Score
+      limit: 4 // Ограничиваем результат 10 записями
+    });
 
-exports.addresult = async (userId, level, time, points) => {
-  const result = await Result.create({
-    UserID: userId,
-    Level: level,
-    Time: time,
-    Points: points
-  });
-  return result.ID;
-};
+    return leaderboardData;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+}
 
-exports.deleteresult = async (ID) => {
-  const result = await Result.destroy({ where: { ID: ID } });
-  return result > 0;
-};
+module.exports = new ResultServices();
+// exports.addresult = async (userId, level, time, points) => {
+//   const result = await Result.create({
+//     UserID: userId,
+//     Level: level,
+//     Time: time,
+//     Points: points
+//   });
+//   return result.ID;
+// };
+
+// exports.deleteresult = async (ID) => {
+//   const result = await Result.destroy({ where: { ID: ID } });
+//   return result > 0;
+// };

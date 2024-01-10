@@ -1,7 +1,7 @@
 
 const Sequelize = require('sequelize');
 module.exports = function(sequelize){
-const Result = sequelize.define("Result", {
+return  sequelize.define("Result", {
   Id: {
     type: Sequelize.BIGINT,
     primaryKey: true,
@@ -26,11 +26,11 @@ const Result = sequelize.define("Result", {
     nameTable:'Result'
   });
 
-  Result.associate = function(models) {
-    this.belongsTo(models.User, { foreignKey: 'UserId' });
-  };
+  // Result.associate = function(models) {
+  //   this.belongsTo(models.User, { foreignKey: 'UserId' });
+  // };
 
-  return Result;
+  // return Result;
 };
 
   

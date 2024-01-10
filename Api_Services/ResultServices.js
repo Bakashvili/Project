@@ -11,11 +11,14 @@ const Result = require('../DataAccesLayer/Result')(sequelize);
 class ResultServices {
   async getLeaderboardData() {
   try {
+    
     const leaderboardData = await Result.findAll({
       attributes: ['Score', 'Times', 'UserId'],
- // Выбираем нужные поля
-      order: [['Score', 'DESC']], // Сортируем по убыванию поля Score
-      limit: 4 // Ограничиваем результат 10 записями
+      order: [['Score', 'DESC']],
+      limit: 8,
+      include: {
+
+    }
     });
 
     return leaderboardData;

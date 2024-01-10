@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize){
-const User =  sequelize.define("User", {
+return sequelize.define("User", {
   Id: {
     type:  Sequelize.BIGINT,
     primaryKey: true,
@@ -30,11 +30,16 @@ const User =  sequelize.define("User", {
     freezeTableName: true,
     nameTable:'User'
   });
+  // User.associate = (models) => {
+  //   User.hasMany(models.Result);
+  // };
 
-  User.associate = function(models) {
-    this.hasMany(models.Result, { foreignKey: 'UserId' });
+  // return User;
+
+  // User.associate = function(models) {
+  //   this.hasMany(models.Result, { foreignKey: 'UserId' });
   };
-  return User};
+  //return User};
   
 
 //User.hasMany(Result, { foreignKey: 'UserId' });

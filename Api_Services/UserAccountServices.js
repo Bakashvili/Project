@@ -10,11 +10,44 @@ var config = { expiration: 600};
 var jwt = require('../jwt-utils');
 const bcrypt = require('bcrypt');
 class UserAccountServices {
+  async checkUser(email){
+    try {
+      const user = await User.findOne({ where: { Email: email } });
+      if (user) {
+        return null;
+      } 
+      return false;
+    } catch (error) {
+      throw new Error('Failed to check email');
+    }
+
+  }
+  async checkUsername(username){
+    try {
+      const user = await User.findOne({ where: { Username: username } });
+      if (user) {
+        return null;
+      } 
+      return false;
+    } catch (error) {
+      throw new Error('Failed to check username');
+    }
+
+  }
+  async generateToken(username){
+    try { 
+           const token = jwt.getNewAccessToken(username);
+           console.log(token);
+          return token; 
+      
+    } catch (error) {
+      throw new Error('Failed to generate token');
+    }
+
+  }
   async createUser(userData) {
     try {
-      const { username, email, password } = userData;
-      console.log(userData);
-      const token = jwt.getNewAccessToken(username);
+      const { username, email, password, token } = userData;
       console.log(token);
       const UserModel = await User.create({
         Uid: token, 
@@ -33,21 +66,16 @@ class UserAccountServices {
   async authUser(userData) {
     try {
       const {email, password} = userData;
-      console.log(email, password);
       const user = await User.findOne({ where: { Email: email } });
+      console.log(user);
       const passwordMatch = await bcrypt.compare(password, user.Password);
       console.log(passwordMatch);
       if (!user || !passwordMatch) {
         throw new Error('Invalid email or password');
       }
-      //console.log(email, user.Password, password, user);
-      // if (!user || user.Password !== password) {
-      //   throw new Error('Invalid email or password');
-      // }
-      // else{
-       console.log(email, password);
-        
-      // }
+      const token = await this.generateToken(user.Username);
+      const result = await User.update({ Uid: token }, { where: { Username: user.Username } });
+      return token;
       
     } catch (error) {
       throw new Error('Failed to authenticate user');
@@ -56,28 +84,39 @@ class UserAccountServices {
 
   async updateEmail(userData) {
     try {
-      const {email, password, newEmail} = userData;
+      const {email, password, email2, authToken} = userData;
+      const decodedToken = await jwt.validateAccessToken(authToken);
+      if (!decodedToken) {
+        throw new Error('Token is not verifyed');
+      }
       const user = await User.findOne({ where: { Email: email } });
-      console.log(user, password)
+      console.log(email2)
       const passwordMatch = await bcrypt.compare(password, user.Password);
       console.log(passwordMatch);
       if (!user || !passwordMatch) {
-        throw new Error('Invalid email or password');
+        return null;
       }
-      user.Email = newEmail;
-      await user.save();
-      return user;
+      const updatedUser = await user.update({ Email: email2 });
+       console.log(email2, user);
+      return updatedUser;
+      
     } catch (error) {
       throw new Error('Failed to update email');
     }
   }
 
-  async deleteAccount(userId) {
+  async deleteAccount(authToken) {
     try {
-      const deletedUser = await User.destroy({ where: { Uid: userId } });
+      const decodedToken = await jwt.validateAccessToken(authToken);
+      if (!decodedToken) {
+        throw new Error('Token is not verifyed');
+      }
+      console.log(decodedToken);
+      const deletedUser = await User.destroy({ where: { Username: decodedToken } });
       if (!deletedUser) {
         throw new Error('User not found');
       }
+      // нужно забрать токен ( закончить сессию)
       return deletedUser;
     } catch (error) {
       throw new Error('Failed to delete account');
@@ -86,65 +125,7 @@ class UserAccountServices {
 
 }
 
+
 module.exports = new UserAccountServices();
 
-// class UserAccountServices {
-//   async createUser(userData) {
-//     try {
-//       const {username, email, password } = userData;
-//       const token = JwtUtils.generateToken(userData);
-//       const UserModel = await User.create({
-//         Uid:token, // Убедитесь, что правильно генерируете идентификатор пользователя
-//         Email: email,
-//         Username: username,
-//         Password: password,
-//  // Предположим, что у вас есть поле Token в вашей модели пользователя
-//       });
-//       return UserModel; // Используем метод create для создания нового пользователя
-      
-//     } catch (error) {
-//       throw new Error('Failed to create user');
-//     console.log(`Username ${username },Email ${email}, password ${password}, Uid ${Uid} ` );
-//     }
-//   }
 
-//   async authUser(userData) {
-//     try {
-//       const user = await User.findOne({ email: userData.email });
-//       if (!user || user.password !== userData.password) {
-//         throw new Error('Invalid email or password');
-//       }
-//       return user;
-//     } catch (error) {
-//       throw new Error('Failed to authenticate user');
-//     }
-//   }
-
-//   async updatePassword(userId, newPassword) {
-//     try {
-//       const user = await User.findById(userId);
-//       if (!user) {
-//         throw new Error('User not found');
-//       }
-//       user.password = newPassword;
-//       await user.save();
-//       return user;
-//     } catch (error) {
-//       throw new Error('Failed to update password');
-//     }
-//   }
-
-//   async deleteAccount(userId) {
-//     try {
-//       const deletedUser = await User.findByIdAndDelete(userId);
-//       if (!deletedUser) {
-//         throw new Error('User not found');
-//       }
-//       return deletedUser;
-//     } catch (error) {
-//       throw new Error('Failed to delete account');
-//     }
-//   }
-// }
-
-// module.exports = new  UserAccountServices();

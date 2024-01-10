@@ -11,50 +11,70 @@ const sequelize = new Sequelize("cssgriddb","root","Kartoshka",
 const Level = require('../DataAccesLayer/Level')(sequelize);
 const Result = require('../DataAccesLayer/Result')(sequelize);
 const User = require('../DataAccesLayer/User')(sequelize);
+var jwt = require('../jwt-utils');
 class LevelController {
   async getLevel() {
     try {
       const level = await Level.findOne({ where: { Id: 1} });
-      console.log(level);
       return level; 
       
     } catch (error) {
       throw new Error('Failed to get Level');
     }
   }
-  async sendAnswer(answer) {
+  async sendAnswer(answer, authToken) {
     try {
-      
+      var checked = false;
+      const decodedToken = await jwt.validateAccessToken(authToken);
+      console.log(decodedToken);
+      if (!decodedToken) {
+        throw new Error('Token is not verifyed');
+      } 
+      console.log(checked);
       const level = await Level.findOne({ where: { Id: 1 } });
-      if (!answer || answer!== level.CorrectAnswer) {
-        throw new Error('Answer is not correct');
+      if (answer || answer === level.CorrectAnswer) {
+        checked = true;
       }
-      
-      return level; 
+      console.log(checked);
+      const user = await User.findOne({ where: { Uid: authToken } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+     console.log(user);
+      const result = await Result.findOne({ where: { UserId: user.Id } });
+      if (checked == true) {
+        result.Score = result.Score + 1; 
+       await result.save();
+      } 
+      console.log(result);
+      return result;
     } catch (error) {
-      throw new Error('Failed to get Level');
+      throw new Error('Failed to send answer');
     }
   }
-  async increaseScore() { //UserId
+  async UpdateScore(authToken) { //UserId
     try {
-      const result = await Result.findOne({ where: { UserId: 1 } });// UserId
-      result.Score = (result.Score || 0) + 1; // Увеличение счета на 1
-      await result.save(); // Сохранение изменений в базе данных
-      return result.Score; // Возвращаем значение счета
-    } catch (error) {
-      throw new Error('Failed to increase score');
+      const decodedToken = await jwt.validateAccessToken(authToken);
+      if (!decodedToken) {
+        throw new Error('Token is not verifyed');
+      } 
+      console.log(decodedToken);
+      const user = await User.findOne({ where: { Uid: authToken } });
+    if (!user) {
+      throw new Error('User not found');
     }
-  }
-  async UpdateScore() { //UserId
-    try {
-      const result = await Result.findOne({ where: { UserId: 1 } });// UserId
-      return result.Score; // Возвращаем значение счета
-    } catch (error) {
-      throw new Error('Failed to increase score');
+   console.log(user);
+    const result = await Result.findOne({ where: { UserId: user.Id } });
+    if (!result) {
+      result = await Result.create({ UserId: user.Id, Score: 0, Times: 0 });
     }
+    await result.save();
+    return result.Score;
+  }catch (error) {
+    throw new Error('Failed to Update score');
   }
-
   
+}
 }
 
 module.exports = new LevelController();

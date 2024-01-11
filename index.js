@@ -151,8 +151,9 @@ app.post('/updateUser', async function(req, res) {
     if (!user) {
       return res.status(500).send('Error updating user');
     }
-    res.redirect('/login')
-    //return res.status(200).send('User successfully updated');
+    res.status(200).send('User successfully updated');
+
+    
   } catch (error) {
     console.error(error);
     return res.status(500).send(`Internal server error!`);
@@ -188,22 +189,20 @@ app.get('/leaders', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
+    
   }
 });
 app.get('/delete', async (req, res) => {
   const {authToken} = req.cookies;
   try {
-    //const decodedToken = await verifyAccessToken(authToken);
-    if(!authToken){
-      return res.status(400).send('Token is null');
-    }
-    const deleteUser= await UserAccountServices.deleteAccount(authToken);
-    if(!deleteUser){
+    const deleteUser = await UserAccountServices.deleteAccount(authToken);
+    console.log(deleteUser);
+    if(deleteUser !== true){
       return res.status(400).send("User isn't exist");
     }
-    //res.status(200).send('all good');
-    res.cookie('authToken', { expires: new Date(0) });
-    res.redirect('/');
+    res.clearCookie('authToken');
+    res.end();
+
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');

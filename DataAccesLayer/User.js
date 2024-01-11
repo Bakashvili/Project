@@ -29,17 +29,5 @@ return sequelize.define("User", {
     timestamps: false,
     freezeTableName: true,
     nameTable:'User'
-  });
-  // User.associate = (models) => {
-  //   User.hasMany(models.Result);
-  // };
-
-  // return User;
-
-  // User.associate = function(models) {
-  //   this.hasMany(models.Result, { foreignKey: 'UserId' });
-  };
-  //return User};
-  
-
-//User.hasMany(Result, { foreignKey: 'UserId' });
+  }
+  )};

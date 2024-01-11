@@ -16,9 +16,6 @@ class ResultServices {
       attributes: ['Score', 'Times', 'UserId'],
       order: [['Score', 'DESC']],
       limit: 8,
-      include: {
-
-    }
     });
 
     return leaderboardData;

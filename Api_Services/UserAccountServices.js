@@ -6,6 +6,9 @@ const sequelize = new Sequelize("cssgriddb","root","Kartoshka",
  logging: false
 });
 const User = require('../DataAccesLayer/User')(sequelize);
+const Result = require('../DataAccesLayer/Result')(sequelize);
+const Trainsession = require('../DataAccesLayer/Trainsession')(sequelize);
+const Levelanswer = require('../DataAccesLayer/Levelanswer')(sequelize);
 var config = { expiration: 600};
 var jwt = require('../jwt-utils');
 const bcrypt = require('bcrypt');
@@ -109,15 +112,25 @@ class UserAccountServices {
     try {
       const decodedToken = await jwt.validateAccessToken(authToken);
       if (!decodedToken) {
-        throw new Error('Token is not verifyed');
+        throw new Error('Token is not verified');
       }
       console.log(decodedToken);
-      const deletedUser = await User.destroy({ where: { Username: decodedToken } });
-      if (!deletedUser) {
+      const user = await User.findOne({ where: { Username: decodedToken } });
+      if (!user) { 
         throw new Error('User not found');
       }
-      // нужно забрать токен ( закончить сессию)
-      return deletedUser;
+      await Result.destroy({ where: { UserId: user.Id } });
+      await Trainsession.destroy({ where: { UserId: user.Id } });
+      await Levelanswer.destroy({ where: { UserId: user.Id } });
+      
+      const result = await User.destroy({ where: { Id: user.Id } });
+      console.log(result);
+      if (result === 1) {
+        return true;
+      } else {
+        throw new Error('Failed to delete account');
+      }
+  
     } catch (error) {
       throw new Error('Failed to delete account');
     }

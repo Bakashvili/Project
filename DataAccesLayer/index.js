@@ -19,10 +19,10 @@ module.exports = {
     Levelanswer: Levelanswer,
     Trainsession:Trainsession,
 }
-// User.hasMany(Result, {foreignKey: 'UserId'});
-// Result.belongsTo(User);
-User.hasMany(Result);
+User.hasMany(Result, {foreignKey: 'UserId'});
 Result.belongsTo(User);
+//sUser.hasMany(Result);
+//Result.belongsTo(User);
 // Levelanswer.belongsTo(User, { foreignKey: 'UserId' });
 // Levelanswer.belongsTo(Level, { foreignKey: 'LevelId' });
 // Levelanswer.belongsTo(Trainsession, { foreignKey: 'TrainsessionId' });
@@ -31,11 +31,11 @@ Result.belongsTo(User);
 
  //Trainsession.belongsTo(User, { foreignKey: 'UserId' });
 
-//   User.associate = function(models) {
-//     this.hasMany(models.Result, { foreignKey: 'UserId' });
-//   };
+  User.associate = function(models) {
+    this.hasMany(models.Result, { foreignKey: 'UserId' });
+  };
   
 //   // В модели Result
-//   Result.associate = function(models) {
-//     this.belongsTo(models.User, { foreignKey: 'UserId' });
-//   };
+   Result.associate = function(models) {
+    this.belongsTo(models.User, { foreignKey: 'UserId' });
+   };

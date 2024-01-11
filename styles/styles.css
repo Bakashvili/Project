@@ -1,13 +1,16 @@
 body {
     font-family: 'Cormorant', serif;
-    display: flex;
+    display: grid;
     justify-content: center;
     align-items: center;
+    flex-direction: row;
     height: 100vh;
     margin: 0;
     background-color: rgb(20, 163, 132);
+
   }
   .text_field{
+    position: relative;
     background: #f2ae4e;
     padding: 20px;
     margin: 40px;
@@ -17,6 +20,7 @@ body {
     justify-content: center;
     text-align: center;
   }
+
   .text_field .btncheck, .btnnext{
     margin-bottom: 40px;
     font-weight: 300;
@@ -40,6 +44,9 @@ body {
     border-radius: 6px;
   }
   .game-container {
+    position: fixed;
+    height: 450px;
+    width: 470px; 
     text-align: center;
     justify-content: center;
     padding: 30px;
@@ -49,6 +56,14 @@ body {
     background-repeat: cover;
     border-radius: 10px;
   }
+  .column {
+    display: flex;
+    align-items: center;
+    max-height: 100vh; /* Ограничение высоты до высоты окна браузера */
+  /* Добавление вертикальной прокрутки, если содержимое выходит за пределы */
+
+  }
+  
   
   .grid {
     display: grid;
@@ -77,6 +92,7 @@ body {
   }
   
   .set {
+
     margin-top: 20px;
     text-overflow: initial;
     text-align: center;

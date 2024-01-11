@@ -1,6 +1,6 @@
-const swaggerJSDoc = require('swagger-jsdoc');
-const fs = require('fs');
 
+const fs = require('fs');
+const swaggerJSDoc = require('swagger-jsdoc');
 async function generateSwaggerSpec() {
   const options = {
     definition: {

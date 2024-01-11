@@ -10,32 +10,36 @@
   <link rel="stylesheet" href="styles.css">
   <title>CSS Grid Game</title>
 </head>
-<body>
 
+
+    </div>
+    <% level.forEach(level => { %>
+  
+  
     <div class="text_field">
-      
-        <div class="form-info">
-          <label name="texttask" text="Task 1"><%=textTask%></label>
-          <label  name="definationtask" value="Bla-Bla"></label>
+        <div class="form-info" >
+         
+          <label  name="Id" text="1"><%=level.Id%></label>
+          <label name="texttask" text="Task 1"><%=level.Texttask%></label>
+          
         </div>
         <form method="post" action="/game/getResult">
-          <div class="input-box">
+          <div class="input-box" name="Id" value="<%=level.Id%>">
             <input type="text" name="answer">
               <button class="btncheck">Проверить</button>
               
           </div>
    </div> 
+ <% }); %> 
 
 
 
   <div class="game-container">
     <div class="grid">
-      <div class="cell knight" draggable="true">
-      </div>
+      <div class="cell knight" draggable="true"></div>
       <div class="cell" draggable="true"></div>
       <div class="cell" draggable="true"></div>
-      <div class="cell dragon" draggable="true">
-      </div>
+      <div class="cell dragon" draggable="true"></div>
       <div class="cell" draggable="true"></div>
       <div class="cell" draggable="true"></div>
       <div class="cell" draggable="true"></div>
@@ -48,15 +52,12 @@
       <div class="cell" draggable="true"></div>
       <div class="cell" draggable="true"></div>
       <div class="cell" draggable="true"></div>
-    </div>
-    <div class="set">
-       <div class="score">Score: <%=score%></div> 
-       <!-- <form method="get" action="/game/next">
-              <button  class="btnnext">Следующий</button></form> -->
-      <!-- <div class="timer">Time: <span id="timer">0</span></div>  -->
-    </div></form>
-    </div>
-</form>
+    </div></form>  
+   </div>
+   <div class="input-box">
+    <button class="btncheck" ><a href="/gamefinish">Отправить</a</button>
+</div>
+
   <script src="front.js/script.js"></script>
 </body>
 </html>

@@ -82,27 +82,41 @@ app.get('/game', async (req, res) => {
   try {
     console.log(authToken);
     const level = await LevelController.getLevel(); 
+    //const UpdateScore = await LevelController.UpdateScore(authToken);
+    res.render('index_1', {level}); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+app.get('/gamefinish', async (req, res) => {
+  const {authToken} = req.cookies;
+  try {
+    console.log(authToken); 
     const UpdateScore = await LevelController.UpdateScore(authToken);
-    res.render('index_1', { textTask: level.Texttask, score: UpdateScore}); 
+    res.render('score',{score:UpdateScore}); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
 
+
 app.post('/game/getResult',async (req, res) => {
-  const {answer} = req.body;
+  const {answer, Id} = req.body;
   const {authToken} = req.cookies;
  
   try { 
-    //const level = await LevelController.getLevel(); 
-    const answerlevel = await LevelController.sendAnswer(answer, authToken); 
-    if (!answerlevel) {
+    console.log(answer,(answer.length));
+    for (let i = 0; i < answer.length; i++) {
+      const answers = answer[i];
+      const Id = i + 1;
+      answerlevel =  await LevelController.sendAnswer(answers,Id, authToken); 
+        if (!answerlevel) {
       return res.status(400).send('Error checking answer');
     }
-    //const increaseScore = await LevelController.increaseScore(answerlevel); 
+   }
     return res.redirect('/game');
-  // res.render('index_1', { textTask: level.Texttask, score: increaseScore }); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -189,7 +203,7 @@ app.get('/leaders', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
-    
+
   }
 });
 app.get('/delete', async (req, res) => {

@@ -23,13 +23,13 @@ User.hasMany(Result, {foreignKey: 'UserId'});
 Result.belongsTo(User);
 //sUser.hasMany(Result);
 //Result.belongsTo(User);
-// Levelanswer.belongsTo(User, { foreignKey: 'UserId' });
-// Levelanswer.belongsTo(Level, { foreignKey: 'LevelId' });
-// Levelanswer.belongsTo(Trainsession, { foreignKey: 'TrainsessionId' });
+Levelanswer.belongsTo(User, { foreignKey: 'UserId' });
+ Levelanswer.belongsTo(Level, { foreignKey: 'LevelId' });
+Levelanswer.belongsTo(Trainsession, { foreignKey: 'TrainsessionId' });
 //User.hasMany(Result, { foreignKey: 'UserId' });
 // Result.belongsTo(User, { foreignKey: 'UserId' });
-
- //Trainsession.belongsTo(User, { foreignKey: 'UserId' });
+User.hasMany(Trainsession, {foreignKey: 'UserId'});
+ Trainsession.belongsTo(User, { foreignKey: 'UserId' });
 
   User.associate = function(models) {
     this.hasMany(models.Result, { foreignKey: 'UserId' });

@@ -81,9 +81,11 @@ app.get('/game', async (req, res) => {
   const {authToken} = req.cookies;
   try {
     console.log(authToken);
+    const sessionId = await LevelController.createSession(authToken); 
     const level = await LevelController.getLevel(); 
+    console.log(sessionId);
     //const UpdateScore = await LevelController.UpdateScore(authToken);
-    res.render('index_1', {level}); 
+    res.render('index_1', {level, sessionId: sessionId} ); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -91,6 +93,7 @@ app.get('/game', async (req, res) => {
 });
 app.get('/gamefinish', async (req, res) => {
   const {authToken} = req.cookies;
+  const {sessionId} = req.body;
   try {
     console.log(authToken); 
     const UpdateScore = await LevelController.UpdateScore(authToken);
@@ -103,18 +106,20 @@ app.get('/gamefinish', async (req, res) => {
 
 
 app.post('/game/getResult',async (req, res) => {
-  const {answer, Id} = req.body;
+  const {answer,sessionId} = req.body;
   const {authToken} = req.cookies;
  
   try { 
-    console.log(answer,(answer.length));
+    
     for (let i = 0; i < answer.length; i++) {
       const answers = answer[i];
-      const Id = i + 1;
-      answerlevel =  await LevelController.sendAnswer(answers,Id, authToken); 
+      const id = i + 1;
+      const session = Number(sessionId[i]);
+      console.log(id, answers,(answers.length), session);
+      answerlevel = await LevelController.sendAnswer(authToken,answers,id,session); 
         if (!answerlevel) {
-      return res.status(400).send('Error checking answer');
-    }
+           return res.status(400).send('Error checking answer');
+        }
    }
     return res.redirect('/game');
   } catch (error) {

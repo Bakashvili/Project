@@ -11,8 +11,8 @@
   <title>CSS Grid Game</title>
 </head>
 
-
-    </div>
+<div name="sessionId"></div>
+ 
     <% level.forEach(level => { %>
   
   
@@ -23,10 +23,11 @@
           <label name="texttask" text="Task 1"><%=level.Texttask%></label>
           
         </div>
-        <form method="post" action="/game/getResult">
+        <form method="post" action="/game/getResult">  
+          <input type="hidden" name="sessionId" value="<%=sessionId%>">
           <div class="input-box" name="Id" value="<%=level.Id%>">
             <input type="text" name="answer">
-              <button class="btncheck">Проверить</button>
+              <button class="btncheck" name="send">Проверить</button>
               
           </div>
    </div> 
@@ -55,7 +56,7 @@
     </div></form>  
    </div>
    <div class="input-box">
-    <button class="btncheck" ><a href="/gamefinish">Отправить</a</button>
+    <button class="btncheck" name="sendAll"><a href="/gamefinish">Отправить</a</button>
 </div>
 
   <script src="front.js/script.js"></script>

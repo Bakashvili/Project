@@ -15,7 +15,7 @@ class ResultServices {
     const leaderboardData = await Result.findAll({
       attributes: ['Score', 'Times', 'UserId'],
       order: [['Score', 'DESC']],
-      limit: 8,
+      limit: 10,
     });
 
     return leaderboardData;

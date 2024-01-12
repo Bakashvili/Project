@@ -18,6 +18,10 @@ return  sequelize.define("Levelanswer", {
   TrainsessionId: {
     type: Sequelize.BIGINT,
     allowNull: false
+  },
+  Value: {
+    type: Sequelize.STRING,
+    allowNull: true
   }},
   {
     timestamps: false,

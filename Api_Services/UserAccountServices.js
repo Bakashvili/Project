@@ -89,6 +89,7 @@ class UserAccountServices {
     try {
       const {email, password, email2, authToken} = userData;
       const decodedToken = await jwt.validateAccessToken(authToken);
+      console.log(decodedToken);
       if (!decodedToken) {
         throw new Error('Token is not verifyed');
       }

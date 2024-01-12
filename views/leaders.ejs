@@ -13,7 +13,6 @@
       <th>Место</th>
       <th>ID</th>
       <th>Баллы</th>
-      <th>Время</th>
      
     </tr>
     <% leaderboardData.forEach((result, index) => { %>
@@ -21,7 +20,6 @@
         <td><%= index + 1 %></td>
         <td><%= result.UserId %></td>
         <td><%= result.Score %></td>
-        <td><%= result.Times %></td>
       </tr>
     <% }); %>
   </table></form>

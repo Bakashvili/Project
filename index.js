@@ -81,8 +81,9 @@ app.get('/game', async (req, res) => {
   const {authToken} = req.cookies;
   try {
     console.log(authToken);
-    const sessionId = await LevelController.createSession(authToken); 
+    
     const level = await LevelController.getLevel(); 
+    const sessionId = await LevelController.createSession(authToken); 
     console.log(sessionId);
     //const UpdateScore = await LevelController.UpdateScore(authToken);
     res.render('index_1', {level, sessionId: sessionId} ); 
@@ -220,6 +221,7 @@ app.get('/delete', async (req, res) => {
       return res.status(400).send("User isn't exist");
     }
     res.clearCookie('authToken');
+    res.status(200).send('Acccount deleted');
     res.end();
 
   } catch (error) {

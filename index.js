@@ -2,23 +2,21 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const DataAccesLayer = require('./DataAccesLayer');
-const Api_Contract = require('./ApiContract');
-const Api_Controller = require('./Api_Controller');
+//const Api_Contract = require('./ApiContract');
+//const Api_Controller = require('./Api_Controller');
 const Api_Services = require('./Api_Services');
 const generateSwaggerSpec = require('./swagger');
 const apiRoutes = require('./apiRoutes');
 const createPath = require('./create-path');
 const fs = require('fs');
 const ejs = require('ejs');
-//var jwt = require('./jwt-utils');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const UserAccountServices = require('./Api_Services/UserAccountServices');
 const ResultServices = require('./Api_Services/ResultServices');
-//const levelRoutes = require('./routes/levelroute');
-const userController= require('./Api_Controller/UserController');
-const LevelController= require('./Api_Controller/LevelController');
+const LevelServices = require('./Api_Services/LevelServices');
+
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const app = express();app.use(bodyParser.json()); 
@@ -27,20 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, { swaggerUrl: '/api-docs/swagger_output.json' }));
 app.use('/api', apiRoutes);
-const User = DataAccesLayer.User;
-const Result= DataAccesLayer.Result;
-const Level = DataAccesLayer.Level;
-const Levelanswer = DataAccesLayer.Levelanswer;
-const Trainsession = DataAccesLayer.Trainsession;
-const DBcontext = DataAccesLayer.index;
-//const UserContract = Api_Contract.UserContract;
-//const LevelController = Api_Controller.LevelController;
-//const ResultController = Api_Controller.ResultController;
-const UserController = Api_Controller.UserController;
-const UserService = Api_Services.UserServices;
-//const LevelService = Api_Services.LevelServices;
-//const ResultService = Api_Services.ResultServices;
-const PORT = 3002;
+const PORT = 3000;
 app.use(express.static('styles'));
 app.use(express.static('front'));
 
@@ -49,11 +34,6 @@ app.get('/', (req, res) => {
   const title = 'Home';
   res.render(createPath('index'), { title });
 });
-// app.get('/game', (req, res) => {
-//   const title = 'game';
-//   res.render(createPath('index_1'), { title });
-// });
-
  function checkEmail(email){
     const EMAIL_REGEXP = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu;
     return EMAIL_REGEXP.test(email);
@@ -82,10 +62,9 @@ app.get('/game', async (req, res) => {
   try {
     console.log(authToken);
     
-    const level = await LevelController.getLevel(); 
-    const sessionId = await LevelController.createSession(authToken); 
+    const level = await LevelServices.getLevel(); 
+    const sessionId = await LevelServices.createSession(authToken); 
     console.log(sessionId);
-    //const UpdateScore = await LevelController.UpdateScore(authToken);
     res.render('index_1', {level, sessionId: sessionId} ); 
   } catch (error) {
     console.error(error);
@@ -94,10 +73,10 @@ app.get('/game', async (req, res) => {
 });
 app.get('/gamefinish', async (req, res) => {
   const {authToken} = req.cookies;
-  const {sessionId} = req.body;
+  // const {sessionId} = req.body;
   try {
     console.log(authToken); 
-    const UpdateScore = await LevelController.UpdateScore(authToken);
+    const UpdateScore = await LevelServices.UpdateScore(authToken);
     res.render('score',{score:UpdateScore}); 
   } catch (error) {
     console.error(error);
@@ -116,8 +95,8 @@ app.post('/game/getResult',async (req, res) => {
       const answers = answer[i];
       const id = i + 1;
       const session = Number(sessionId[i]);
-      console.log(id, answers,(answers.length), session);
-      answerlevel = await LevelController.sendAnswer(authToken,answers,id,session); 
+
+      answerlevel = await LevelServices.sendAnswer(authToken,answers,id,session); 
         if (!answerlevel) {
            return res.status(400).send('Error checking answer');
         }

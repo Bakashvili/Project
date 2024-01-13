@@ -27,17 +27,3 @@ class ResultServices {
 }
 
 module.exports = new ResultServices();
-// exports.addresult = async (userId, level, time, points) => {
-//   const result = await Result.create({
-//     UserID: userId,
-//     Level: level,
-//     Time: time,
-//     Points: points
-//   });
-//   return result.ID;
-// };
-
-// exports.deleteresult = async (ID) => {
-//   const result = await Result.destroy({ where: { ID: ID } });
-//   return result > 0;
-// };

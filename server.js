@@ -6,7 +6,6 @@ const DataAccesLayer = require('./DataAccesLayer');
 //const Api_Controller = require('./Api_Controller');
 const Api_Services = require('./Api_Services');
 const generateSwaggerSpec = require('./swagger');
-const apiRoutes = require('./apiRoutes');
 const createPath = require('./create-path');
 const fs = require('fs');
 const ejs = require('ejs');
@@ -18,13 +17,11 @@ const ResultServices = require('./Api_Services/ResultServices');
 const LevelServices = require('./Api_Services/LevelServices');
 
 require('dotenv').config()
-const jwt = require('jsonwebtoken')
 const app = express();app.use(bodyParser.json()); 
 app.use(cookieParser()); 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, { swaggerUrl: '/api-docs/swagger_output.json' }));
-app.use('/api', apiRoutes);
 const PORT = 3000;
 app.use(express.static('styles'));
 app.use(express.static('front'));

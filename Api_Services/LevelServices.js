@@ -24,13 +24,10 @@ class LevelServices {
     if (!user) {
       throw new Error('User not found');
     }
-    console.log(user);
     const session = await Trainsession.create({UserId:user.Id});
-    console.log(session);
     if (!session) {
       throw new Error("Session isn't created");
     }
-    console.log(session.Id);
     return session.Id;
   }catch(error){
     
@@ -42,7 +39,6 @@ class LevelServices {
     try {
       const levels = await Level.findAll({ limit: 10, attributes: ['Id', 'Texttask'] });;
       return levels; 
-      
     } catch (error) {
       throw new Error('Failed to get Level');
     }
@@ -50,24 +46,16 @@ class LevelServices {
   async sendAnswer(authToken,answers,id,session) {
     try {
       const decodedToken = await jwt.validateAccessToken(authToken);
-      console.log(decodedToken);
       if (!decodedToken) {
         throw new Error('Token is not verifyed');
       } 
-      
-      console.log(authToken,answers,id,session);
       const level = await Level.findOne({where : { Id: id }});
-
-      console.log(level.Id);
       const user = await User.findOne({ where: { Uid: authToken } });
       if (!user) {
         throw new Error('User not found');
       }
-      console.log(session);
-      console.log( user.Id,session, id, answers);
         const currentLevel = await Levelanswer.create( {UserId : user.Id, LevelId: level.Id, TrainsessionId: session, Value: answers});
-        console.log(currentLevel);
-        return currentLevel;
+        return true;
 
       
     } catch (error) {

@@ -117,28 +117,14 @@ class UserAccountServices {
       }
       console.log(decodedToken);
       const user = await User.findOne({ where: { Username: decodedToken } });
-      const train = await Trainsession.findOne({where: { UserId : user.Id}});
+  
       if (!user) { 
         throw new Error('User not found');
       }
-      console.log(user);
-      const result_del = await Result.destroy({ where: { UserId: user.Id } });
-      console.log('Удалено из Result:', result_del);
-      
-      const train_count = await Trainsession.count({ where: { UserId: user.Id } });  
-       console.log('Количесвтво записей из TrainSession:', train_count, train);
-      for(let i = 0; i < train_count; i++){
-         await Trainsession.destroy({ where: { UserId: user.Id } });
-      }
-      console.log('Количесвтво записей из TrainSession:', train_count, train);
-       
-      const level_count = await Levelanswer.count({where:{TrainsessionId: train.Id}});
-      console.log('Количество из LevelAnswer:', level_count);
-      for(let i = 0; i < level_count; i++){
-        await Levelanswer.destroy({where:{TrainsessionId: train.Id}});
-      }
-      console.log('Количество из LevelAnswer:', level_count);
-      const result = await User.destroy({ where: { Id: user.Id } });
+    await Levelanswer.destroy({ where: { UserId: user.Id } });
+    await Trainsession.destroy({ where: { UserId: user.Id } });
+    await Result.destroy({ where: { UserId: user.Id } });
+    const result = await User.destroy({ where: { Id: user.Id } });
       console.log(result);
       if (result === 1) {
         return true;
@@ -147,7 +133,7 @@ class UserAccountServices {
       }
   
     } catch (error) {
-      throw new Error('Failed to delete account');
+      throw new Error('Failed to delete account' + error.message);
     }
   }
 
